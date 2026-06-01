@@ -3,6 +3,7 @@ import { Command } from "commander";
 import { setSecret, hasSecret } from "./lib/keychain.ts";
 import * as out from "./lib/output.ts";
 import { importFromLuff } from "./lib/import-luff.ts";
+import { readSecret } from "./lib/prompt.ts";
 import { todoist } from "./providers/todoist.ts";
 import type { TodoProvider, TodoTask, TodoProject } from "./types.ts";
 
@@ -44,14 +45,19 @@ function printProjects(projects: TodoProject[]): void {
 // ── Program ───────────────────────────────────────────────────
 
 const program = new Command();
-program.name("tick").description("Task management CLI for Todoist").version("0.1.0");
+program.name("tick").description("Task management CLI for Todoist").version("0.1.1");
 
 // ── Setup (provider-specific) ─────────────────────────────────
 
 program
-  .command("setup <token>")
-  .description("Save Todoist API token (stored in macOS Keychain)")
-  .action(async (token: string) => {
+  .command("setup")
+  .description("Save Todoist API token (prompted securely; stored in macOS Keychain)")
+  .action(async () => {
+    const token = await readSecret("Todoist API token: ");
+    if (!token) {
+      out.error("No token provided.");
+      process.exit(1);
+    }
     setSecret("api-token", token);
     out.success("API token saved to Keychain.");
     try {
