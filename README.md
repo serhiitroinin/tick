@@ -10,7 +10,7 @@ The name is the satisfying *tick* of a checked-off box. This is an unofficial th
 brew install serhiitroinin/tap/tick
 ```
 
-Or run from source with [Bun](https://bun.sh):
+Or run from source with [Bun](https://bun.sh) ≥ 1.3.9 (for the native `Bun.secrets` keychain API):
 
 ```sh
 bun install
