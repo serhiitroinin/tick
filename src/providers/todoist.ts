@@ -56,8 +56,8 @@ interface Paginated<T> {
   next_cursor: string | null;
 }
 
-function client(): HttpClient {
-  const token = requireSecret("api-token");
+async function client(): Promise<HttpClient> {
+  const token = await requireSecret("api-token");
   return new HttpClient({
     baseUrl: BASE_URL,
     headers: { Authorization: `Bearer ${token}` },
@@ -135,12 +135,12 @@ export const todoist: TodoProvider = {
   name: "todoist",
 
   async listProjects() {
-    const raw = await getAll<RawProject>(client(), "/projects");
+    const raw = await getAll<RawProject>((await client()), "/projects");
     return raw.filter((p) => !p.is_deleted && !p.is_archived).map(mapProject);
   },
 
   async getProject(id) {
-    return mapProject(await client().get<RawProject>(`/projects/${id}`));
+    return mapProject(await (await client()).get<RawProject>(`/projects/${id}`));
   },
 
   async createProject(name, opts) {
@@ -148,15 +148,15 @@ export const todoist: TodoProvider = {
     if (opts?.parentId) body.parent_id = opts.parentId;
     if (opts?.viewStyle) body.view_style = opts.viewStyle;
     if (opts?.color) body.color = opts.color;
-    return mapProject(await client().post<RawProject>("/projects", body));
+    return mapProject(await (await client()).post<RawProject>("/projects", body));
   },
 
   async deleteProject(id) {
-    return client().delete(`/projects/${id}`);
+    return (await client()).delete(`/projects/${id}`);
   },
 
   async listTasks(opts) {
-    const http = client();
+    const http = (await client());
     if (opts?.filter) {
       const raw = await getAll<RawTask>(http, "/tasks/filter", { query: opts.filter });
       return raw.map(mapTask);
@@ -168,7 +168,7 @@ export const todoist: TodoProvider = {
   },
 
   async getTask(id) {
-    return mapTask(await client().get<RawTask>(`/tasks/${id}`));
+    return mapTask(await (await client()).get<RawTask>(`/tasks/${id}`));
   },
 
   async createTask(content, opts) {
@@ -179,19 +179,19 @@ export const todoist: TodoProvider = {
     if (opts?.dueString) body.due_string = opts.dueString;
     if (opts?.labels?.length) body.labels = opts.labels;
     if (opts?.description) body.description = opts.description;
-    return mapTask(await client().post<RawTask>("/tasks", body));
+    return mapTask(await (await client()).post<RawTask>("/tasks", body));
   },
 
   async quickAddTask(text) {
-    return mapTask(await client().post<RawTask>("/tasks/quick", { text }));
+    return mapTask(await (await client()).post<RawTask>("/tasks/quick", { text }));
   },
 
   async completeTask(id) {
-    await client().post(`/tasks/${id}/close`);
+    await (await client()).post(`/tasks/${id}/close`);
   },
 
   async reopenTask(id) {
-    await client().post(`/tasks/${id}/reopen`);
+    await (await client()).post(`/tasks/${id}/reopen`);
   },
 
   async updateTask(id, opts) {
@@ -201,7 +201,7 @@ export const todoist: TodoProvider = {
     if (opts.dueString !== undefined) body.due_string = opts.dueString;
     if (opts.labels !== undefined) body.labels = opts.labels;
     if (opts.description !== undefined) body.description = opts.description;
-    return mapTask(await client().post<RawTask>(`/tasks/${id}`, body));
+    return mapTask(await (await client()).post<RawTask>(`/tasks/${id}`, body));
   },
 
   async moveTask(id, target) {
@@ -212,37 +212,37 @@ export const todoist: TodoProvider = {
     if (target.projectId) body.project_id = target.projectId;
     if (target.sectionId) body.section_id = target.sectionId;
     if (target.parentId) body.parent_id = target.parentId;
-    await client().post(`/tasks/${id}/move`, body);
+    await (await client()).post(`/tasks/${id}/move`, body);
   },
 
   async deleteTask(id) {
-    return client().delete(`/tasks/${id}`);
+    return (await client()).delete(`/tasks/${id}`);
   },
 
   async listLabels() {
-    return (await getAll<RawLabel>(client(), "/labels")).map(mapLabel);
+    return (await getAll<RawLabel>((await client()), "/labels")).map(mapLabel);
   },
 
   async createLabel(name, opts) {
     const body: Record<string, unknown> = { name };
     if (opts?.color) body.color = opts.color;
-    return mapLabel(await client().post<RawLabel>("/labels", body));
+    return mapLabel(await (await client()).post<RawLabel>("/labels", body));
   },
 
   async deleteLabel(id) {
-    return client().delete(`/labels/${id}`);
+    return (await client()).delete(`/labels/${id}`);
   },
 
   async listSections(projectId) {
     const params: Record<string, string> = {};
     if (projectId) params.project_id = projectId;
-    const raw = await getAll<RawSection>(client(), "/sections", params);
+    const raw = await getAll<RawSection>((await client()), "/sections", params);
     return raw.filter((s) => !s.is_deleted && !s.is_archived).map(mapSection);
   },
 
   async createSection(name, projectId) {
     return mapSection(
-      await client().post<RawSection>("/sections", { name, project_id: projectId })
+      await (await client()).post<RawSection>("/sections", { name, project_id: projectId })
     );
   },
 };

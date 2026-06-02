@@ -2,7 +2,6 @@
 import { Command } from "commander";
 import { setSecret, hasSecret } from "./lib/keychain.ts";
 import * as out from "./lib/output.ts";
-import { importFromLuff } from "./lib/import-luff.ts";
 import { readSecret } from "./lib/prompt.ts";
 import { todoist } from "./providers/todoist.ts";
 import type { TodoProvider, TodoTask, TodoProject } from "./types.ts";
@@ -45,7 +44,7 @@ function printProjects(projects: TodoProject[]): void {
 // ── Program ───────────────────────────────────────────────────
 
 const program = new Command();
-program.name("tick").description("Task management CLI for Todoist").version("0.1.3");
+program.name("tick").description("Task management CLI for Todoist").version("0.2.0");
 
 // ── Setup (provider-specific) ─────────────────────────────────
 
@@ -58,7 +57,7 @@ program
       out.error("No token provided.");
       process.exit(1);
     }
-    setSecret("api-token", token);
+    await setSecret("api-token", token);
     out.success("API token saved to Keychain.");
     try {
       const projects = await provider.listProjects();
@@ -73,7 +72,7 @@ program
   .description("Check API connection")
   .action(async () => {
     try {
-      if (!hasSecret("api-token")) {
+      if (!(await hasSecret("api-token"))) {
         out.error("No API token in Keychain. Run: tick setup");
         process.exit(1);
       }
@@ -84,34 +83,6 @@ program
     } catch (e: unknown) {
       out.error((e as Error).message);
       process.exit(1);
-    }
-  });
-
-program
-  .command("auth-import-from-luff")
-  .description("One-shot: copy Todoist token from legacy luff-todo Keychain entry")
-  .addHelpText("after", `
-Details:
-  For users migrating from the older 'todo' CLI shipped via the luff
-  monorepo. Reads the credential stored under the 'luff-todo' Keychain
-  service and copies it to 'tick'. Idempotent — re-run is safe.
-
-  The source entry is NOT deleted; remove it manually with:
-    security delete-generic-password -s luff-todo -a api-token
-
-Example:
-  tick auth-import-from-luff`)
-  .action(() => {
-    const { copied, missing } = importFromLuff();
-    if (copied.length === 0) {
-      out.error("No entries found under luff-todo. Nothing to import.");
-      process.exit(1);
-    }
-    out.success(`Imported ${copied.length} entries from luff-todo:`);
-    for (const k of copied) console.log(`  + ${k}`);
-    if (missing.length > 0) {
-      out.blank();
-      out.info(`Missing (not present in luff-todo): ${missing.join(", ")}`);
     }
   });
 

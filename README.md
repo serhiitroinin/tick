@@ -42,18 +42,6 @@ tick labels ls                   # list labels
 
 Run `tick --help` (or `tick <command> --help`) for the full command set.
 
-## Migrating from `luff`
-
-`tick` was extracted from the `todo` tool in the `luff` monorepo. To copy your existing
-Todoist token from the old Keychain entry:
-
-```sh
-tick auth-import-from-luff
-```
-
-This reads the credential stored under the legacy `luff-todo` Keychain service and copies
-it to `tick`. It is idempotent and does not delete the original.
-
 ## License
 
 MIT
