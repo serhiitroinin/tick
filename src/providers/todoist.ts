@@ -84,7 +84,7 @@ async function getAll<T>(
 
 // ── Mappers ─────────────────────────────────────────────────────
 
-function mapProject(r: RawProject): TodoProject {
+export function mapProject(r: RawProject): TodoProject {
   return {
     id: r.id,
     name: r.name,
@@ -95,7 +95,7 @@ function mapProject(r: RawProject): TodoProject {
   };
 }
 
-function mapTask(r: RawTask): TodoTask {
+export function mapTask(r: RawTask): TodoTask {
   return {
     id: r.id,
     content: r.content,
@@ -110,7 +110,7 @@ function mapTask(r: RawTask): TodoTask {
   };
 }
 
-function mapLabel(r: RawLabel): TodoLabel {
+export function mapLabel(r: RawLabel): TodoLabel {
   return {
     id: r.id,
     name: r.name,
@@ -120,7 +120,7 @@ function mapLabel(r: RawLabel): TodoLabel {
   };
 }
 
-function mapSection(r: RawSection): TodoSection {
+export function mapSection(r: RawSection): TodoSection {
   return {
     id: r.id,
     name: r.name,
