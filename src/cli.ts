@@ -45,7 +45,7 @@ function printProjects(projects: TodoProject[]): void {
 // ── Program ───────────────────────────────────────────────────
 
 const program = new Command();
-program.name("tick").description("Task management CLI for Todoist").version("0.1.1");
+program.name("tick").description("Task management CLI for Todoist").version("0.1.2");
 
 // ── Setup (provider-specific) ─────────────────────────────────
 
@@ -74,7 +74,7 @@ program
   .action(async () => {
     try {
       if (!hasSecret("api-token")) {
-        out.error("No API token in Keychain. Run: tick setup <token>");
+        out.error("No API token in Keychain. Run: tick setup");
         process.exit(1);
       }
       const projects = await provider.listProjects();

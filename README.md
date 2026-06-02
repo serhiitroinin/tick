@@ -22,7 +22,7 @@ bun run src/cli.ts --help
 Get an API token from Todoist → Settings → Integrations → Developer, then:
 
 ```sh
-tick setup <token>
+tick setup
 tick status
 ```
 
