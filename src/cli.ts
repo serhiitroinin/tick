@@ -44,7 +44,7 @@ function printProjects(projects: TodoProject[]): void {
 // ── Program ───────────────────────────────────────────────────
 
 const program = new Command();
-program.name("tick").description("Task management CLI for Todoist").version("0.2.0");
+program.name("tick").description("Task management CLI for Todoist").version("0.2.1");
 
 // ── Setup (provider-specific) ─────────────────────────────────
 
