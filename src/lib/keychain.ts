@@ -31,7 +31,7 @@ export function requireSecret(account: string): string {
   const value = getSecret(account);
   if (value === null) {
     throw new Error(
-      `No secret found in Keychain for account "${account}". Run: ${SERVICE} setup <token>`
+      `No secret found in Keychain for account "${account}". Run: ${SERVICE} setup`
     );
   }
   return value;
